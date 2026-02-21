@@ -37,11 +37,24 @@ Hyperlocal climate intelligence for precise farm management.
 *   **Live Sensor Data**: Real-time readings from deployed IoT field sensors.
 *   **Dynamic Forecasts**: 7-day weather predictions tailored for specific crops.
 
+### 🔐 Robust Authentication & Security
+A fully integrated, secure user session management system ensuring data isolation and privacy.
+*   **Session-Only Cookies**: Ephemeral authentication that automatically logs users out when the browser window is closed.
+*   **Tab-Level Isolation**: Advanced security preventing unauthorized session bleeding between browser tabs.
+*   **Dynamic Route Protection**: Intelligent middleware that seamlessly redirects unauthenticated users away from sensitive dashboards.
+
+### 👤 Profile Management
+A central hub for users to manage their agricultural identity and farm details.
+*   **Persistent Data Storage**: Seamlessly edit and save details like land area, location, and crop types.
+*   **Intuitive UI**: Smooth slide-in/fade-out page transitions and graceful "Germinating..." loading states.
+*   **Interactive Confirmation Modals**: Custom-designed, thematic dialogs for critical actions like Sign Out and Profile Deletion, replacing native browser alerts.
+
 ---
 
 ## 🛠️ Tech Stack
 
 *   **Frontend**: Next.js 14 (App Router)
+*   **Backend & Database**: Supabase (PostgreSQL, Authentication)
 *   **Animation**: Framer Motion & HTML5 Canvas
 *   **Styling**: Tailwind CSS (Custom neon & emerald palette)
 *   **Icons**: Material Symbols, Lucide React & Custom Doodles
@@ -59,8 +72,12 @@ Hyperlocal climate intelligence for precise farm management.
 │   ├── schemes/        # Scheme Matcher Page
 │   ├── financial/      # Smart Financial Hub
 │   ├── advisory/       # Weather & Climate Advisory
+│   ├── login/          # Secure Authentication Gateway
+│   ├── profile/        # User Profile Management
 │   └── page.tsx        # Scrollytelling Growth Engine (Home)
-├── components/         # Premium UI Components (Canvas, Overlays, Cards)
+├── components/         # Premium UI Components (Canvas, Modals, Overlays)
+├── context/            # Global State (AuthContext, ThemeContext)
+├── utils/              # Helper functions and Supabase clients
 ├── public/             
 │   ├── growth-sequence/ # 120-frame JPEG sequence
 │   └── icons/           # Custom assets and doodles

@@ -1,17 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GrowthCanvas from "@/components/GrowthCanvas";
 import LoadingState from "@/components/Loading";
 import Particles from "@/components/Particles";
-import ScrollOverlays from "@/components/ScrollOverlays";
-import DashboardOverlay from "@/components/DashboardOverlay";
+import ScrollStory from "@/components/ScrollStory";
+import Dashboard from "@/components/Dashboard";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const { scrollYProgress } = useScroll();
   const indicatorOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
+  const { user } = useAuth();
+  const [skipIntro, setSkipIntro] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('skipIntro') === 'true') {
+      setSkipIntro(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && typeof window !== 'undefined') {
+      sessionStorage.setItem('skipIntro', 'true');
+      setSkipIntro(true);
+    }
+  }, [user]);
+
+  const introBypassed = !!user || skipIntro;
 
   return (
     <main className="relative bg-[#020402] min-h-screen selection:bg-[#39ff14] selection:text-black">
@@ -41,23 +60,18 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Main Content - Only visible/scrollable after load? 
-          Actually, we can let it sit there but maybe lock scroll. 
-          For now, just let it be efficiently hidden by loader.
-      */}
-
-      {/* Scrollable Container */}
-      <div className="relative h-[500vh]">
+      {/* Main Content */}
+      <div className={`relative ${introBypassed ? 'h-screen overflow-hidden' : 'h-[500vh]'}`}>
         {/* Fixed Background Elements */}
 
         <Particles />
         <GrowthCanvas onLoaded={() => setIsLoaded(true)} />
 
-        {/* Floating UI / Overlays */}
-        {isLoaded && <ScrollOverlays />}
+        {/* Floating UI / Overlays - Hide intermediates if logged in */}
+        {isLoaded && !introBypassed && <ScrollStory />}
 
-        {/* Scroll Indicator at bottom of first screen */}
-        {isLoaded && (
+        {/* Scroll Indicator - Only show if not logged in */}
+        {isLoaded && !introBypassed && (
           <motion.div
             style={{ opacity: indicatorOpacity }}
             initial={{ opacity: 0, y: 10 }}
@@ -88,7 +102,7 @@ export default function Home() {
         )}
 
         { /* Final Dashboard Overlay */}
-        <DashboardOverlay scrollYProgress={scrollYProgress} />
+        <Dashboard scrollYProgress={scrollYProgress} skipIntro={introBypassed} />
         <div id="dashboard" className="absolute bottom-0 w-full h-1 pointer-events-none" />
       </div>
 

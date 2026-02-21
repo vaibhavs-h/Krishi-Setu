@@ -3,18 +3,36 @@
 import Link from "next/link";
 import { motion, useTransform, MotionValue } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import Header from "@/components/Header";
 
-export default function DashboardOverlay({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
-  const { theme, toggleTheme } = useTheme();
+import { useAuth } from "@/context/AuthContext";
 
+import { useRouter } from "next/navigation";
+
+export default function Dashboard({ scrollYProgress, skipIntro = false }: { scrollYProgress: MotionValue<number>, skipIntro?: boolean }) {
+
+  const { user } = useAuth();
+  const router = useRouter();
   // Fade in the dashboard content completely at the end of the scroll
   const opacity = useTransform(scrollYProgress, [0.93, 1], [0, 1]);
   const pointerEvents = useTransform(scrollYProgress, (v) => (v > 0.95 ? "auto" : "none"));
 
+  const handleCardClick = (e: React.MouseEvent, path: string) => {
+    e.preventDefault();
+    if (user) {
+      router.push(path);
+    } else {
+      router.push("/login");
+    }
+  };
+
+  // Override opacity if user is logged in or bypassed to skip scroll animation
+  const effectiveOpacity = user || skipIntro ? 1 : opacity;
+  const effectivePointerEvents = user || skipIntro ? "auto" : pointerEvents;
+
   return (
     <motion.div
-      style={{ opacity, pointerEvents }}
+      style={{ opacity: effectiveOpacity, pointerEvents: effectivePointerEvents }}
       className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-white/50 dark:bg-[#020402]/60 backdrop-blur-md"
     >
       <style jsx global>{`
@@ -44,30 +62,8 @@ export default function DashboardOverlay({ scrollYProgress }: { scrollYProgress:
       {/* Background Grid */}
       <div className="absolute inset-0 z-0 grid-bg pointer-events-none opacity-40" />
 
-      {/* Navigation */}
-      <nav className="w-full px-8 py-6 flex justify-between items-center shrink-0 z-50 relative">
-        <Link href="/" className="relative group overflow-hidden bg-white/10 dark:bg-black/40 border border-white/10 backdrop-blur-md px-6 py-3 rounded-full flex items-center space-x-3 transition-all hover:border-[var(--neon-green)]/50">
-          <div className="absolute inset-0 bg-[var(--neon-green)]/5 group-hover:bg-[var(--neon-green)]/10 transition-colors"></div>
-          <span className="font-display font-bold text-xl tracking-tight text-gray-950 dark:text-white relative z-10">
-            <span className="text-emerald-700 dark:text-[var(--neon-green)] drop-shadow-[0_0_8px_rgba(57,255,20,0.6)]">Krishi</span> Setu
-          </span>
-          <span className="hidden sm:inline-block text-[10px] uppercase tracking-widest text-gray-800 dark:text-gray-400 pl-3 border-l border-gray-400 dark:border-gray-700 font-mono font-bold">Cultivating Innovation</span>
-        </Link>
-
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={toggleTheme}
-            className="p-3 rounded-full border border-black/5 dark:border-white/10 bg-white/10 dark:bg-black/40 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-[var(--neon-green)] hover:border-emerald-600 dark:hover:border-[var(--neon-green)]/50 transition-all duration-300 backdrop-blur-sm shadow-lg group"
-          >
-            <span className="material-icons-round text-xl group-hover:rotate-12 transition-transform">
-              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-            </span>
-          </button>
-          <button className="p-3 rounded-full border border-black/5 dark:border-white/10 bg-white/10 dark:bg-black/40 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-[var(--neon-green)] hover:border-emerald-600 dark:hover:border-[var(--neon-green)]/50 transition-all duration-300 backdrop-blur-sm shadow-lg">
-            <span className="material-icons-round text-xl">account_circle</span>
-          </button>
-        </div>
-      </nav>
+      {/* Unified Header */}
+      <Header />
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center px-8 w-full max-w-[1400px] mx-auto py-10 relative z-10">
@@ -99,7 +95,7 @@ export default function DashboardOverlay({ scrollYProgress }: { scrollYProgress:
         {/* HUD / Navigation Hub */}
         <div className="w-full mt-auto mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2">
           {/* Card 1: Market Tracker */}
-          <Link href="/market" className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-emerald-500/50 dark:hover:border-[var(--neon-green)]/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(57,255,20,0.1)] backdrop-blur-xl flex">
+          <Link href="/market" onClick={(e) => handleCardClick(e, "/market")} className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-emerald-500/50 dark:hover:border-[var(--neon-green)]/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(57,255,20,0.1)] backdrop-blur-xl flex">
             <div className="w-1/2 p-6 flex flex-col justify-between relative z-10 border-r border-black/5 dark:border-white/5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-emerald-700 dark:text-[var(--neon-green)] text-lg">currency_rupee</span>
@@ -125,7 +121,7 @@ export default function DashboardOverlay({ scrollYProgress }: { scrollYProgress:
           </Link>
 
           {/* Card 2: Government Schemes */}
-          <Link href="/schemes" className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(34,211,238,0.1)] backdrop-blur-xl flex">
+          <Link href="/schemes" onClick={(e) => handleCardClick(e, "/schemes")} className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(34,211,238,0.1)] backdrop-blur-xl flex">
             <div className="w-1/2 p-6 flex flex-col justify-between relative z-10 border-r border-black/5 dark:border-white/5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-cyan-600 dark:text-cyan-400 text-lg">policy</span>
@@ -151,7 +147,7 @@ export default function DashboardOverlay({ scrollYProgress }: { scrollYProgress:
           </Link>
 
           {/* Card 3: Financial Hub */}
-          <Link href="/financial" className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-amber-500/50 dark:hover:border-amber-400/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(251,191,36,0.1)] backdrop-blur-xl flex">
+          <Link href="/financial" onClick={(e) => handleCardClick(e, "/financial")} className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-amber-500/50 dark:hover:border-amber-400/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(251,191,36,0.1)] backdrop-blur-xl flex">
             <div className="w-1/2 p-6 flex flex-col justify-between relative z-10 border-r border-black/5 dark:border-white/5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-lg">account_balance_wallet</span>
@@ -176,7 +172,7 @@ export default function DashboardOverlay({ scrollYProgress }: { scrollYProgress:
           </Link>
 
           {/* Card 4: Climate Advisory */}
-          <Link href="/advisory" className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-sky-500/50 dark:hover:border-sky-400/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(56,189,248,0.1)] backdrop-blur-xl flex">
+          <Link href="/advisory" onClick={(e) => handleCardClick(e, "/advisory")} className="group relative overflow-hidden h-48 bg-white/40 dark:bg-[rgba(10,20,15,0.85)] rounded-2xl border border-black/5 dark:border-white/5 hover:border-sky-500/50 dark:hover:border-sky-400/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(56,189,248,0.1)] backdrop-blur-xl flex">
             <div className="w-1/2 p-6 flex flex-col justify-between relative z-10 border-r border-black/5 dark:border-white/5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-sky-600 dark:text-sky-400 text-lg">cloud</span>
