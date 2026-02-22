@@ -53,58 +53,6 @@
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- A Supabase project
-- A Google Gemini API key
-
-### 1. Clone & Install
-```bash
-git clone https://github.com/yourusername/krishi-setu.git
-cd krishi-setu
-npm install
-```
-
-### 2. Environment Variables
-Create a `.env.local` file in the root:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-GEMINI_API_KEY=your_gemini_api_key
-```
-
-### 3. Database Setup
-Run the following in your Supabase SQL Editor to create the required tables:
-
-**Profiles table** (extends Supabase Auth):
-```sql
-CREATE TABLE public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id),
-  username TEXT UNIQUE NOT NULL,
-  full_name TEXT,
-  location TEXT,
-  land_size NUMERIC,
-  crops TEXT[],
-  annual_income NUMERIC,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view and edit own profile"
-  ON public.profiles FOR ALL USING (auth.uid() = id);
-```
-
-**Schemes table:** The `ai_insert_schemes.sql` file (if included) seeds 121 government schemes. Run it in the SQL Editor once. Alternatively refer to the schema in that file.
-
-### 4. Run Locally
-```bash
-npm run dev
-```
-App available at `http://localhost:3000`
-
----
-
 ## 📁 Project Structure
 
 ```
