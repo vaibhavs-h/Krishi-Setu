@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
-// Initialize the Google GenAI SDK
-// It automatically picks up GEMINI_API_KEY from the environment
-const ai = new GoogleGenAI({});
+// Initialize with explicit API key
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: Request) {
   try {
@@ -32,17 +31,15 @@ ${JSON.stringify(schemes.map((s: any) => ({
       eligibility_criteria: s.eligibility_criteria,
       target_demographic: s.target_demographic,
       target_crops: s.target_crops,
-      min_land: s.min_land_area,
-      max_land: s.max_land_area,
-      max_income: s.max_income
     })), null, 2)}
 
 INSTRUCTIONS:
-1. Hard Filter: Immediately eliminate any schemes where the farmer's land holding or income EXCEEDS the scheme's strict maximums, or where their state absolutely does not match the state applicability (if specified).
-2. Rank the remaining schemes based on how perfectly they match the farmer's profile, crop focus, and demographic.
-3. Select the Top 5 best matches.
-4. For each selected scheme, generate a custom 1-2 sentence 'matchReason' explaining EXACTLY why the farmer qualifies based on their provided profile data and the scheme's deep eligibility criteria. Write this directly to the farmer (e.g., "Because you farm 12 acres of Wheat in MP, you perfectly qualify for...").
-5. Return the result STRICTLY as a raw JSON array of objects. Do not use markdown blocks or text outside the array.
+1. Evaluate each scheme based on the farmer's crop, land holding, income, and location against the eligibility criteria and target demographic/crops.
+2. Schemes with "All Farmers" or "All Crops" in their targeting are broadly applicable.
+3. Prioritize schemes that match the farmer's crop type and income level.
+4. Select the Top 5 best matches.
+5. For each selected scheme, generate a custom 1-2 sentence 'matchReason' explaining EXACTLY why the farmer qualifies based on their provided profile data and the scheme's eligibility criteria. Write this directly to the farmer (e.g., "Because you farm 12 acres of Wheat, you perfectly qualify for...").
+6. Return the result STRICTLY as a raw JSON array of objects. Do not use markdown blocks or text outside the array.
 
 EXPECTED JSON FORMAT:
 [
@@ -55,7 +52,7 @@ EXPECTED JSON FORMAT:
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
         temperature: 0.2, // Low temperature for factual, deterministic matching
