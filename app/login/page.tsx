@@ -111,8 +111,11 @@ export default function LoginPage() {
         type: "error",
         onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
       });
+    } finally {
+      // Always reset loading state regardless of success or error
       setIsLoading(false);
     }
+
   };
 
   return (

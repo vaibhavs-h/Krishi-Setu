@@ -1,92 +1,164 @@
-# Krishi Setu
+# 🌾 Krishi-Setu
 
-**Krishi Setu** is a premium, deep-tech agricultural platform designed to bridge the gap between complex data and farmers. Built with a "bio-digital" aesthetic, it combines immersive storytelling with actionable intelligence, visualizing the journey of a crop while providing real-time market data, financial tools, and climate advisory.
-
-🔗 **Live Application**: [https://krishi-setu-nine.vercel.app/](https://krishi-setu-nine.vercel.app/)
+**An AI-powered agricultural platform for Indian farmers** — connecting them with government schemes, live market prices, real-time weather & soil data, and financial tools in one unified dashboard.
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-### 🌱 Immersive Scrollytelling (Home)
-An organic, 120-frame image sequence linked to scroll progress, narrating the growth cycle of a crop from seed to harvest with precision.
-*   **Sticky Canvas**: High-performance rendering for smooth 60fps animations.
-*   **Cinematic Vignette**: Dynamic overlays that focus attention on the crop's development.
+### 🤖 AI Scheme Matcher
+- 121 Central + State government agricultural schemes loaded in Supabase
+- Gemini AI matches schemes to the farmer's profile (crop, land size, income)
+- Each matched scheme shows full eligibility criteria, required documents, and links directly to the official government portal for application
 
-### 📈 Market Price Intelligence (`/market`)
-A real-time trading dashboard for farmers to track crop prices and market trends.
-*   **AI Neural Insights**: Predictive algorithms offering "Buy" or "Hold" signals based on global data.
-*   **Live Ticker**: Real-time price updates for major commodities like Wheat, Rice, and Corn.
-*   **Deep-Tech UI**: Dark-mode optimized with neon accents and glassmorphic panels.
+### 🌦️ Advisory & Field Intelligence
+- **Real-time weather** via GPS + Open-Meteo API (temperature, humidity, wind, UV, pressure)
+- **Real soil moisture** from Open-Meteo hourly soil data (m³/m³)
+- **Real soil pH & nitrogen** from SoilGrids ISRIC API (no key required)
+- **Historical 6-month rainfall** from Open-Meteo Archive API — actual precipitation for the farmer's exact location
+- Weather-derived pest risk assessment + harvest window estimation
+- Auto-refreshes every 10 minutes
 
-### 🏛️ Scheme Matcher (`/schemes`)
-An advanced algorithmic engine that connects farmers with government subsidies.
-*   **Smart Profiling**: Matches schemes based on land holding, state, and income.
-*   **Direct Access**: One-click "Apply Now" links to official government portals.
-*   **Doodle Aesthetics**: Friendly, hand-drawn icons to make complex forms approachable.
+### 📈 Live Market Intelligence
+- Real-time price simulation for major crops
+- Live price charts with trend indicators
+- AI-generated market insights
 
-### 💳 Smart Financial Hub (`/financial`)
-A comprehensive financial command center for the modern farmer.
-*   **Credit Line Tracker**: Visual progress bars for KCC loans and equipment finance.
-*   **Readiness Score**: A credit-health gauge to help farmers access better interest rates.
-*   **Transaction Logs**: Clear, categorized history of farm expenses and income.
+### 💳 Financial Dashboard
+- Farm credit score gauge with profile-based estimation
+- NCDEX & Agri Forex market rates tracker
+- Transaction history
 
-### 🌦️ Weather & Climate Advisory (`/advisory`)
-Hyperlocal climate intelligence for precise farm management.
-*   **Sowing Recommendations**: AI-driven dates for optimal planting based on moisture and temp.
-*   **Live Sensor Data**: Real-time readings from deployed IoT field sensors.
-*   **Dynamic Forecasts**: 7-day weather predictions tailored for specific crops.
-
-### 🔐 Robust Authentication & Security
-A fully integrated, secure user session management system ensuring data isolation and privacy.
-*   **Session-Only Cookies**: Ephemeral authentication that automatically logs users out when the browser window is closed.
-*   **Tab-Level Isolation**: Advanced security preventing unauthorized session bleeding between browser tabs.
-*   **Dynamic Route Protection**: Intelligent middleware that seamlessly redirects unauthenticated users away from sensitive dashboards.
-
-### 👤 Profile Management
-A central hub for users to manage their agricultural identity and farm details.
-*   **Persistent Data Storage**: Seamlessly edit and save details like land area, location, and crop types.
-*   **Intuitive UI**: Smooth slide-in/fade-out page transitions and graceful "Germinating..." loading states.
-*   **Interactive Confirmation Modals**: Custom-designed, thematic dialogs for critical actions like Sign Out and Profile Deletion, replacing native browser alerts.
+### 🔐 Authentication
+- Username + password login (Supabase Auth)
+- Protected routes — all pages require login
+- User profile: name, location, land size, crops, income
 
 ---
 
 ## 🛠️ Tech Stack
 
-*   **Frontend**: Next.js 14 (App Router)
-*   **Backend & Database**: Supabase (PostgreSQL, Authentication)
-*   **Animation**: Framer Motion & HTML5 Canvas
-*   **Styling**: Tailwind CSS (Custom neon & emerald palette)
-*   **Icons**: Material Symbols, Lucide React & Custom Doodles
-*   **State Management**: React Hooks (Context API)
-*   **Deployment**: Vercel
+| Layer | Technology |
+|---|---|
+| **Framework** | Next.js 15 (App Router) |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS |
+| **Database & Auth** | Supabase (PostgreSQL + Auth) |
+| **AI** | Google Gemini API (scheme matching) |
+| **Weather** | Open-Meteo API (free, no key) |
+| **Soil Data** | SoilGrids ISRIC REST API v2 (free, no key) |
+| **Geocoding** | Nominatim / OpenStreetMap (free, no key) |
+| **Icons** | Material Icons Round |
+| **Fonts** | Space Grotesk, Inter |
 
 ---
 
-## 🏗️ Project Structure
+## 🚀 Getting Started
 
-```text
-/
-├── app/                
-│   ├── market/         # Market Intelligence Dashboard
-│   ├── schemes/        # Scheme Matcher Page
-│   ├── financial/      # Smart Financial Hub
-│   ├── advisory/       # Weather & Climate Advisory
-│   ├── login/          # Secure Authentication Gateway
-│   ├── profile/        # User Profile Management
-│   └── page.tsx        # Scrollytelling Growth Engine (Home)
-├── components/         # Premium UI Components (Canvas, Modals, Overlays)
-├── context/            # Global State (AuthContext, ThemeContext)
-├── utils/              # Helper functions and Supabase clients
-├── public/             
-│   ├── growth-sequence/ # 120-frame JPEG sequence
-│   └── icons/           # Custom assets and doodles
-├── styles/             # Global CSS and Tailwind directives
-└── tailwind.config.ts  # Custom Design Tokens
+### Prerequisites
+- Node.js 18+
+- A Supabase project
+- A Google Gemini API key
+
+### 1. Clone & Install
+```bash
+git clone https://github.com/yourusername/krishi-setu.git
+cd krishi-setu
+npm install
+```
+
+### 2. Environment Variables
+Create a `.env.local` file in the root:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+### 3. Database Setup
+Run the following in your Supabase SQL Editor to create the required tables:
+
+**Profiles table** (extends Supabase Auth):
+```sql
+CREATE TABLE public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  username TEXT UNIQUE NOT NULL,
+  full_name TEXT,
+  location TEXT,
+  land_size NUMERIC,
+  crops TEXT[],
+  annual_income NUMERIC,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view and edit own profile"
+  ON public.profiles FOR ALL USING (auth.uid() = id);
+```
+
+**Schemes table:** The `ai_insert_schemes.sql` file (if included) seeds 121 government schemes. Run it in the SQL Editor once. Alternatively refer to the schema in that file.
+
+### 4. Run Locally
+```bash
+npm run dev
+```
+App available at `http://localhost:3000`
+
+---
+
+## 📁 Project Structure
+
+```
+krishi-setu/
+├── app/
+│   ├── advisory/       # Weather, soil & field intelligence
+│   ├── financial/      # Credit score & market rates  
+│   ├── market/         # Live crop price tracker
+│   ├── schemes/        # AI scheme matcher
+│   ├── profile/        # User profile management
+│   ├── login/          # Auth page
+│   └── api/
+│       └── match-schemes/  # Gemini AI route handler
+├── components/
+│   ├── Header.tsx
+│   └── ProtectedRoute.tsx
+├── context/
+│   ├── AuthContext.tsx
+│   └── ThemeContext.tsx
+└── utils/
+    └── supabase/
 ```
 
 ---
 
+## 🌐 APIs Used (All Free)
+
+| API | Purpose | Key Required |
+|---|---|---|
+| [Open-Meteo](https://open-meteo.com) | Current weather + soil moisture + historical rainfall | ❌ No |
+| [SoilGrids ISRIC](https://soilgrids.org) | Soil pH and nitrogen by coordinates | ❌ No |
+| [Nominatim](https://nominatim.org) | Reverse geocoding (GPS → city name) | ❌ No |
+| [Google Gemini](https://ai.google.dev) | AI scheme matching | ✅ Yes |
+| [Supabase](https://supabase.com) | Database, Auth, Storage | ✅ Yes |
+
+---
+
+## 📜 License
+
+MIT — free to use, modify, and distribute.
+
+---
+
+## 🌍 Live Demo
+
+👉 **[krishi-setu-nine.vercel.app](https://krishi-setu-nine.vercel.app)**
+
+---
+
+## 📜 License
+
+MIT — free to use, modify, and distribute.
+
+---
 
 ⭐ **Star this repo if you find it helpful for your Agri-Tech projects!**
 
