@@ -58,10 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           income: profile.income?.toString() || "",
           crops: Array.isArray(profile.crops) ? profile.crops : [],
         });
-      } else if (retryCount < 3) {
+      } else if (retryCount < 2) {
         // If profile not found, it might be a race condition with the DB trigger
-        // Wait 1 second and try again
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Wait 500ms and try again
+        await new Promise(resolve => setTimeout(resolve, 500));
         return fetchProfileAndSetUser(sessionUser, retryCount + 1);
       } else {
         // Session exists but profile is missing after retries (e.g. user deleted from DB)
@@ -104,16 +104,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
         sessionStorage.setItem('tab_session', 'active');
-        await fetchProfileAndSetUser(session.user);
+        // Don't await — fire profile fetch in background so it doesn't block
+        // signInWithPassword from resolving (which would keep the login spinner stuck)
+        fetchProfileAndSetUser(session.user);
       } else if (event === 'SIGNED_OUT') {
         sessionStorage.removeItem('tab_session');
         setUser(null);
       }
-      // Note: we don't necessarily set isLoading to false here to avoid conflicting with initializeAuth
-      // unless it's a transition that requires it. SIGNED_IN/OUT usually happens after init.
     });
 
     return () => {
