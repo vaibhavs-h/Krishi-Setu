@@ -161,7 +161,7 @@ export default function SchemesPage() {
         const { matches } = await response.json();
 
         // 3. Map the AI matches back over the original structured DB data for UI attributes
-        const enrichedSchemes = matches.map((match: any) => {
+        const enrichedSchemes = matches.map((match: { id: string; matchScore: number; matchReason: string }) => {
           const s = data.find(dbScheme => dbScheme.id === match.id);
           if (!s) return null;
 
@@ -205,20 +205,6 @@ export default function SchemesPage() {
     }
   };
 
-  const handleApply = (scheme: Scheme) => {
-    const newApp: Application = {
-      id: `${scheme.id}_${Date.now()}`,
-      name: scheme.name,
-      ref: `#APP-${Math.floor(Math.random() * 90000) + 10000}`,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      benefit: scheme.maxBenefit,
-      status: "IN REVIEW",
-      icon: scheme.icon,
-      colorClass: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400"
-    };
-
-    setApplications(prev => [newApp, ...prev]);
-  };
 
   if (!isClient) return null;
 
