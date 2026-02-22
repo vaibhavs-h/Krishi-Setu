@@ -54,7 +54,7 @@ export default function SchemesPage() {
 
   // App State
   const [schemes, setSchemes] = useState<Scheme[]>([]);
-  const [applications, setApplications] = useState<Application[]>(INITIAL_APPLICATIONS);
+  const applications: Application[] = INITIAL_APPLICATIONS;
   const [isMatching, setIsMatching] = useState(false);
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
 
